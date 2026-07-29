@@ -70,7 +70,9 @@ export const PaymentUpload: React.FC = () => {
     }).eq('id', 1);
 
     if (!error) {
+      setSettings(editForm);
       setIsEditing(false);
+      fetchSettings(); // Double check from server
     } else {
       console.error(error);
       alert('Error updating payment settings');
