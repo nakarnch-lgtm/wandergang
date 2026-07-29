@@ -66,7 +66,7 @@ function App() {
         </header>
 
         {/* Main Grid Layout */}
-        <div className="grid-2-col" style={{ gridTemplateColumns: '1.5fr 1fr', gap: '2rem', flex: 1 }}>
+        <div className="dashboard-grid" style={{ gap: '2rem', flex: 1 }}>
           {/* Left Column */}
           <div className="flex-col gap-6">
             <TripBanner />

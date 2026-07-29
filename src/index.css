@@ -144,6 +144,13 @@ button {
   gap: 1.5rem;
 }
 
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  flex: 1;
+}
+
 .grid-3-col {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -310,6 +317,16 @@ button {
   /* Grid Layouts to 1 column */
   .grid-2-col, .grid-3-col {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Hide header search/actions on mobile */
+  .main-content header > div:last-child {
+    display: none !important;
   }
 
   .main-content {
