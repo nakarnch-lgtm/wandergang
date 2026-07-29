@@ -80,12 +80,25 @@ export const PaymentUpload: React.FC = () => {
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0] || !user) return;
+    if (!e.target.files || !e.target.files[0] || !user || uploading) return;
     
     const file = e.target.files[0];
     setUploading(true);
 
     try {
+      // 1. Double check DB before uploading to prevent race conditions
+      const { data: existingPending } = await supabase
+        .from('payment_slips')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pending');
+        
+      if (existingPending && existingPending.length > 0) {
+        alert('You already have a pending slip.');
+        setUploading(false);
+        return;
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       
@@ -247,7 +260,8 @@ export const PaymentUpload: React.FC = () => {
                 gap: '1rem',
                 cursor: uploading ? 'default' : 'pointer',
                 background: 'rgba(0,0,0,0.2)',
-                transition: 'all 0.3s'
+                transition: 'all 0.3s',
+                pointerEvents: uploading ? 'none' : 'auto'
               }}
               onMouseEnter={(e) => { if(!uploading) e.currentTarget.style.borderColor = 'var(--accent-teal)'; }}
               onMouseLeave={(e) => { if(!uploading) e.currentTarget.style.borderColor = 'var(--card-border)'; }}
