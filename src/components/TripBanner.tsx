@@ -272,10 +272,11 @@ export const TripBanner: React.FC = () => {
               </div>
               <button 
                 onClick={handleJoinTrip} 
+                disabled={loading}
                 className={isJoined ? "glass-button" : "primary-button"}
                 style={isJoined ? { color: 'var(--success)', borderColor: 'var(--success)' } : {}}
               >
-                {isJoined ? t('Joined') : t('Join Trip')}
+                {isJoined ? t('Joined') : loading ? 'Loading...' : t('Join Trip')}
               </button>
             </div>
 

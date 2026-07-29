@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Sidebar } from '../components/Sidebar'
 import { TripBanner } from '../components/TripBanner'
 import { AdminFeed } from '../components/AdminFeed'

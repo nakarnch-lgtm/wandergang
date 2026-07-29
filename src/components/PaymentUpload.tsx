@@ -9,9 +9,8 @@ export const PaymentUpload: React.FC = () => {
   const isAdmin = user?.email === adminEmail;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
   const [mySlips, setMySlips] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const [settings, setSettings] = useState({
     amount: 350,
@@ -52,7 +51,6 @@ export const PaymentUpload: React.FC = () => {
       setSettings(data);
       setEditForm(data);
     }
-    setLoading(false);
   };
 
   const fetchMySlips = async () => {
