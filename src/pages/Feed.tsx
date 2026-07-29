@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
-import { Activity, Bell, UserPlus, DollarSign, Plane } from 'lucide-react';
+import { Activity, Bell, UserPlus, DollarSign, Plane, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 export const Feed: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+  const isAdmin = user?.email === adminEmail;
   const [activities, setActivities] = useState<any[]>([]);
   const [tripTitle, setTripTitle] = useState('...');
   const [loading, setLoading] = useState(true);
+  const [fixing, setFixing] = useState(false);
 
   useEffect(() => {
     fetchActivities();
@@ -44,6 +49,40 @@ export const Feed: React.FC = () => {
       setActivities(data);
     }
     setLoading(false);
+  };
+
+  const handleFixEmptyFeed = async () => {
+    setFixing(true);
+    try {
+      // 1. Backfill registered users from profiles
+      const { data: profiles } = await supabase.from('profiles').select('id');
+      if (profiles) {
+        for (const p of profiles) {
+          const { data: existing } = await supabase.from('activities')
+            .select('id').eq('user_id', p.id).eq('action_type', 'USER_REGISTERED');
+          if (!existing || existing.length === 0) {
+            await supabase.from('activities').insert({ user_id: p.id, action_type: 'USER_REGISTERED' });
+          }
+        }
+      }
+
+      // 2. Backfill joined users from trip_participants
+      const { data: participants } = await supabase.from('trip_participants').select('user_id');
+      if (participants) {
+        for (const p of participants) {
+          const { data: existing } = await supabase.from('activities')
+            .select('id').eq('user_id', p.user_id).eq('action_type', 'USER_JOINED');
+          if (!existing || existing.length === 0) {
+            await supabase.from('activities').insert({ user_id: p.user_id, action_type: 'USER_JOINED' });
+          }
+        }
+      }
+      
+      await fetchActivities();
+    } catch (e) {
+      console.error('Error fixing feed', e);
+    }
+    setFixing(false);
   };
 
   const renderActivityIcon = (type: string) => {
@@ -100,7 +139,18 @@ export const Feed: React.FC = () => {
           ) : activities.length === 0 ? (
             <div className="text-center py-12">
               <Activity size={48} className="text-muted mb-4 mx-auto" opacity={0.5} />
-              <p className="text-muted">No activities yet. Join the trip to see updates here!</p>
+              <p className="text-muted mb-6">ยังไม่มีประวัติกิจกรรมใน Feed ตอนนี้</p>
+              {isAdmin && (
+                <button 
+                  onClick={handleFixEmptyFeed} 
+                  disabled={fixing}
+                  className="primary-button" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--warning)', borderColor: 'var(--warning)' }}
+                >
+                  <AlertTriangle size={16} /> 
+                  {fixing ? 'กำลังดึงข้อมูลย้อนหลัง...' : 'แก้ไขดึงประวัติผู้ใช้เก่าย้อนหลัง (สำหรับ Admin)'}
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex-col gap-6 relative">
