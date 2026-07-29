@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, CheckCircle, Edit2, Save, X, Loader2, FileText } from 'lucide-react';
+import { UploadCloud, CheckCircle, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
@@ -109,24 +109,6 @@ export const PaymentUpload: React.FC = () => {
       alert('Failed to upload slip.');
     } finally {
       setUploading(false);
-    }
-  };
-
-  const handleViewSlip = async (path: string) => {
-    if (path.startsWith('http')) {
-      window.open(path, '_blank');
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.storage.from('slips').createSignedUrl(path, 60); // 60 seconds expiry
-      if (error) throw error;
-      if (data) {
-        window.open(data.signedUrl, '_blank');
-      }
-    } catch (error) {
-      console.error('Error generating signed URL:', error);
-      alert('Failed to view slip');
     }
   };
 
@@ -290,46 +272,6 @@ export const PaymentUpload: React.FC = () => {
         </div>
       </div>
 
-      {/* Payment Report / History */}
-      <div className="glass-panel p-6 flex-col" style={{ flex: 1, overflowY: 'auto' }}>
-        <h3 className="font-semibold text-lg mb-4 flex" style={{ alignItems: 'center', gap: '0.5rem' }}>
-          <FileText size={18} className="text-accent-teal" /> My Payment History
-        </h3>
-        
-        {mySlips.length === 0 ? (
-          <p className="text-muted text-sm text-center py-8">No payments uploaded yet.</p>
-        ) : (
-          <div className="flex-col gap-3">
-            {mySlips.map(slip => (
-              <div 
-                key={slip.id} 
-                className="flex-between p-3" 
-                style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--card-border)' }}
-              >
-                <div>
-                  <p className="font-semibold text-sm">{slip.amount} THB</p>
-                  <p className="text-xs text-muted">{new Date(slip.created_at).toLocaleDateString()}</p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <button onClick={() => handleViewSlip(slip.slip_url)} className="text-xs text-accent-teal hover:underline" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                    View Slip
-                  </button>
-                  <span 
-                    className="text-xs font-semibold px-2 py-1" 
-                    style={{ 
-                      borderRadius: '4px',
-                      background: slip.status === 'approved' ? 'rgba(34, 197, 94, 0.1)' : slip.status === 'rejected' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255, 255, 255, 0.1)',
-                      color: slip.status === 'approved' ? 'var(--success)' : slip.status === 'rejected' ? '#ef4444' : 'var(--text-muted)'
-                    }}
-                  >
-                    {slip.status.charAt(0).toUpperCase() + slip.status.slice(1)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 };

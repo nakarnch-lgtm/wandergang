@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
       <nav className="flex-col gap-2 mt-6">
         <SidebarItem icon={<LayoutDashboard size={20} />} label={t('Dashboard')} to="/" active={location.pathname === '/'} />
         <SidebarItem icon={<Plane size={20} />} label={t('My Trips')} to="/trips" active={location.pathname === '/trips'} />
-        <SidebarItem icon={<Wallet size={20} />} label={t('Savings')} to="/savings" active={location.pathname === '/savings'} />
+        <SidebarItem icon={<Wallet size={20} />} label={t('Payment History')} to="/payment-history" active={location.pathname === '/payment-history'} />
         <SidebarItem icon={<MessageSquare size={20} />} label={t('Feed')} to="/feed" active={location.pathname === '/feed'} />
         <SidebarItem icon={<Users size={20} />} label={t('Community')} to="/community" active={location.pathname === '/community'} />
         

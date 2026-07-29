@@ -6,6 +6,7 @@ import { Register } from './pages/Register';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Feed } from './pages/Feed';
 import { Community } from './pages/Community';
+import { PaymentHistory } from './pages/PaymentHistory';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Protected Route Component
@@ -77,6 +78,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Community />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/payment-history" 
+            element={
+              <ProtectedRoute>
+                <PaymentHistory />
               </ProtectedRoute>
             } 
           />
