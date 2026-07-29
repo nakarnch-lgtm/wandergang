@@ -15,9 +15,9 @@ export const TripBanner: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState({
-    title: 'Summer in Hokkaido 2025',
-    dates: 'July 12 - July 20, 2025',
-    location: 'Japan',
+    title: 'Loading...',
+    dates: 'Loading...',
+    location: 'Loading...',
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2000&auto=format&fit=crop',
   });
   
@@ -36,6 +36,7 @@ export const TripBanner: React.FC = () => {
   useEffect(() => {
     fetchParticipants();
     fetchPaymentSettings();
+    fetchTripDetails();
 
     const channel1 = supabase.channel('participants_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_participants' }, () => {
@@ -48,12 +49,35 @@ export const TripBanner: React.FC = () => {
         fetchPaymentSettings();
       })
       .subscribe();
+      
+    const channel3 = supabase.channel('trip_details_banner')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_details' }, () => {
+        fetchTripDetails();
+      })
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel1);
       supabase.removeChannel(channel2);
+      supabase.removeChannel(channel3);
     };
   }, [user]);
+
+  const fetchTripDetails = async () => {
+    const { data } = await supabase.from('trip_details').select('*').eq('id', 1).single();
+    if (data) {
+      const formatted = {
+        title: data.title,
+        dates: data.dates,
+        location: data.location,
+        image: data.image_url
+      };
+      setTripData(formatted);
+      if (!isEditing) {
+        setEditForm(formatted);
+      }
+    }
+  };
 
   const fetchParticipants = async () => {
     const { count, error } = await supabase
@@ -162,10 +186,25 @@ export const TripBanner: React.FC = () => {
     }
 
     const newTripData = { ...editForm, image: finalImageUrl };
-    setTripData(newTripData);
-    setEditForm(newTripData);
-    setBannerFile(null);
-    setIsEditing(false);
+    
+    // Save to Database
+    const { error: updateError } = await supabase.from('trip_details').update({
+      title: newTripData.title,
+      dates: newTripData.dates,
+      location: newTripData.location,
+      image_url: newTripData.image
+    }).eq('id', 1);
+
+    if (updateError) {
+      console.error(updateError);
+      alert('Failed to save trip details.');
+    } else {
+      setTripData(newTripData);
+      setEditForm(newTripData);
+      setBannerFile(null);
+      setIsEditing(false);
+    }
+    
     setUploading(false);
   };
 
