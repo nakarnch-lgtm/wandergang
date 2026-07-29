@@ -2,16 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
-import { Activity, Bell, UserPlus, DollarSign } from 'lucide-react';
+import { Activity, Bell, UserPlus, DollarSign, Plane } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export const Feed: React.FC = () => {
   const { t } = useTranslation();
   const [activities, setActivities] = useState<any[]>([]);
+  const [tripTitle, setTripTitle] = useState('...');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchActivities();
+    const fetchTrip = async () => {
+      const { data } = await supabase.from('trip_details').select('title').eq('id', 1).single();
+      if (data) setTripTitle(data.title);
+    };
+    fetchTrip();
 
     const channel = supabase.channel('feed_activities')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activities' }, () => {
@@ -42,8 +48,10 @@ export const Feed: React.FC = () => {
 
   const renderActivityIcon = (type: string) => {
     switch(type) {
-      case 'USER_JOINED':
+      case 'USER_REGISTERED':
         return <div className="p-2" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', borderRadius: '50%' }}><UserPlus size={20} /></div>;
+      case 'USER_JOINED':
+        return <div className="p-2" style={{ background: 'rgba(168, 85, 247, 0.2)', color: 'var(--accent-purple)', borderRadius: '50%' }}><Plane size={20} /></div>;
       case 'PAYMENT_APPROVED':
         return <div className="p-2" style={{ background: 'rgba(34, 197, 94, 0.2)', color: 'var(--success)', borderRadius: '50%' }}><DollarSign size={20} /></div>;
       default:
@@ -52,15 +60,20 @@ export const Feed: React.FC = () => {
   };
 
   const renderActivityText = (activity: any) => {
-    const name = activity.profiles ? `${activity.profiles.first_name} ${activity.profiles.last_name}` : 'Someone';
+    let name = 'คุณ';
+    if (activity.profiles && (activity.profiles.first_name || activity.profiles.last_name)) {
+      name = `คุณ ${activity.profiles.first_name || ''} ${activity.profiles.last_name || ''}`.trim();
+    }
     
     switch(activity.action_type) {
+      case 'USER_REGISTERED':
+        return <span>🎉 ยินดีต้อนรับสมาชิกใหม่ <strong>{name}</strong></span>;
       case 'USER_JOINED':
-        return <span>🎉 <strong>{name}</strong> joined the trip!</span>;
+        return <span>✈️ <strong>{name}</strong> Join Trip {tripTitle} แล้ว</span>;
       case 'PAYMENT_APPROVED':
-        return <span>💸 <strong>{name}</strong> paid their installment! (Amount: {activity.details?.amount || 0} THB)</span>;
+        return <span>💸 <strong>{name}</strong> จ่ายเงินทริป {tripTitle} แล้ว</span>;
       default:
-        return <span>New activity from <strong>{name}</strong></span>;
+        return <span>กิจกรรมใหม่จาก <strong>{name}</strong></span>;
     }
   };
 
