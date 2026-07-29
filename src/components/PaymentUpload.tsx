@@ -65,10 +65,9 @@ export const PaymentUpload: React.FC = () => {
   };
 
   const handleSaveSettings = async () => {
-    const { error } = await supabase.from('payment_settings').upsert({
-      id: 1,
+    const { error } = await supabase.from('payment_settings').update({
       ...editForm
-    });
+    }).eq('id', 1);
 
     if (!error) {
       setIsEditing(false);
