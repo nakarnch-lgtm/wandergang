@@ -22,8 +22,26 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="sidebar glass-panel" style={{ borderRadius: '0 var(--radius-lg) var(--radius-lg) 0', borderLeft: 'none' }}>
-      <div className="flex-col gap-2">
+    <>
+      {/* Mobile Top Header */}
+      <div className="mobile-header">
+        <div>
+          <h1 className="text-xl font-semibold">
+            Wander<span className="text-gradient">Gang</span>
+          </h1>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button onClick={toggleLanguage} className="glass-button" style={{ padding: '0.5rem', background: 'transparent' }} title={i18n.language === 'en' ? 'Switch to Thai' : 'Switch to English'}>
+            <Globe size={20} />
+          </button>
+          <button onClick={handleLogout} className="glass-button" style={{ padding: '0.5rem', color: '#ef4444', background: 'transparent' }} title={t('Logout')}>
+            <LogOut size={20} />
+          </button>
+        </div>
+      </div>
+
+      <aside className="sidebar glass-panel" style={{ borderRadius: '0 var(--radius-lg) var(--radius-lg) 0', borderLeft: 'none' }}>
+      <div className="flex-col gap-2 sidebar-desktop-only">
         <h1 className="text-xl font-semibold">
           Wander<span className="text-gradient">Gang</span>
         </h1>
@@ -44,7 +62,7 @@ export const Sidebar: React.FC = () => {
         )}
       </nav>
 
-      <div className="mt-auto flex-col gap-2">
+      <div className="mt-auto flex-col gap-2 sidebar-desktop-only">
         <button 
           onClick={toggleLanguage}
           className="flex-between p-4 glass-button"
@@ -81,6 +99,7 @@ export const Sidebar: React.FC = () => {
         </button>
       </div>
     </aside>
+    </>
   );
 };
 

@@ -220,3 +220,100 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted); 
 }
+
+/* --- Responsive Design (Mobile & Tablet) --- */
+
+.mobile-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px; /* For bottom nav */
+    padding-top: 70px; /* For top header */
+  }
+
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    padding: 0 1.5rem;
+    z-index: 1000;
+    border-radius: 0 0 20px 20px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+    border-radius: 20px 20px 0 0 !important;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 1000;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--card-border);
+    height: 80px;
+    justify-content: center;
+  }
+
+  /* Hide desktop header and footer in sidebar */
+  .sidebar-desktop-only {
+    display: none !important;
+  }
+
+  /* Adjust nav links for bottom bar */
+  .sidebar nav {
+    margin-top: 0 !important;
+    flex-direction: row !important;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0 !important;
+  }
+
+  .sidebar nav a {
+    padding: 0.5rem !important;
+    flex-direction: column;
+    gap: 0.25rem !important;
+    align-items: center;
+    background: transparent !important;
+    border: none !important;
+    width: 20%;
+  }
+
+  .sidebar nav a span {
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+
+  /* Grid Layouts to 1 column */
+  .grid-2-col, .grid-3-col {
+    grid-template-columns: 1fr;
+  }
+
+  .main-content {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+}
