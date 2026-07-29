@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { UploadCloud, CheckCircle, Edit2, Save, X, Loader2, FileText } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from 'react-i18next';
 
 export const PaymentUpload: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const isAdmin = user?.email === adminEmail;
 

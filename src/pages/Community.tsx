@@ -18,7 +18,7 @@ export const Community: React.FC = () => {
     fetchMessages();
 
     const channel = supabase.channel('community_messages_channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages' }, payload => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages' }, () => {
         fetchMessages(); // Re-fetch to get joined profile data
       })
       .subscribe();
@@ -37,7 +37,7 @@ export const Community: React.FC = () => {
   };
 
   const fetchMessages = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('community_messages')
       .select(`
         *,
@@ -96,7 +96,7 @@ export const Community: React.FC = () => {
                 <p className="text-muted">No messages yet. Be the first to say hi!</p>
               </div>
             ) : (
-              messages.map((msg, index) => {
+              messages.map((msg) => {
                 const isMe = msg.user_id === user?.id;
                 const name = msg.profiles ? `${msg.profiles.first_name} ${msg.profiles.last_name}` : 'Unknown';
                 

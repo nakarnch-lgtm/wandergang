@@ -14,7 +14,7 @@ export const Feed: React.FC = () => {
     fetchActivities();
 
     const channel = supabase.channel('feed_activities')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activities' }, payload => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activities' }, () => {
         fetchActivities(); // Re-fetch to get joined profile data
       })
       .subscribe();
@@ -25,7 +25,7 @@ export const Feed: React.FC = () => {
   }, []);
 
   const fetchActivities = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('activities')
       .select(`
         *,

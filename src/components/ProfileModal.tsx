@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { X, Save, Upload } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { X, Upload } from 'lucide-react';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -12,7 +11,6 @@ interface ProfileModalProps {
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, onSave }) => {
   const { user } = useAuth();
-  const { t } = useTranslation();
   
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');

@@ -36,7 +36,7 @@ export const AdminDashboard: React.FC = () => {
 
   const fetchSlips = async () => {
     // Fetch slips and join with profiles to get user names
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('payment_slips')
       .select('*, profiles(first_name, last_name)')
       .order('created_at', { ascending: false });

@@ -13,6 +13,7 @@ export const TripBanner: React.FC = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState({
     title: 'Summer in Hokkaido 2025',
     dates: 'July 12 - July 20, 2025',
