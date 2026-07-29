@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { UploadCloud, CheckCircle, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +12,7 @@ export const PaymentUpload: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [mySlips, setMySlips] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const [settings, setSettings] = useState({
     amount: 350,
@@ -116,6 +118,9 @@ export const PaymentUpload: React.FC = () => {
       });
 
       if (insertError) throw insertError;
+      
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
       
     } catch (error) {
       console.error('Error uploading slip:', error);
@@ -286,6 +291,33 @@ export const PaymentUpload: React.FC = () => {
         </div>
       </div>
 
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            style={{
+              position: 'fixed',
+              bottom: '2rem',
+              left: '50%',
+              background: 'var(--success)',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: 'var(--radius-full)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontWeight: 'bold',
+              zIndex: 9999,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}
+          >
+            <CheckCircle size={20} />
+            ส่งสลิปเรียบร้อยแล้ว!
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

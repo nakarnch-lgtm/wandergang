@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Edit2, Save, X, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Edit2, Save, X, Upload, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
@@ -23,6 +23,7 @@ export const TripBanner: React.FC = () => {
   
   const [editForm, setEditForm] = useState(tripData);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   // Dynamic Goal Logic State
   const [participantsCount, setParticipantsCount] = useState(12); // Default mock
@@ -136,6 +137,8 @@ export const TripBanner: React.FC = () => {
       
       if (!error) {
         setIsJoined(true);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
         // Log activity
         await supabase.from('activities').insert({
           user_id: user.id,
@@ -344,6 +347,34 @@ export const TripBanner: React.FC = () => {
           </>
         )}
       </div>
+
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            style={{
+              position: 'fixed',
+              bottom: '2rem',
+              left: '50%',
+              background: 'var(--success)',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: 'var(--radius-full)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontWeight: 'bold',
+              zIndex: 9999,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}
+          >
+            <CheckCircle size={20} />
+            You joined this trip!
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
